@@ -59,10 +59,9 @@ export default function PlayerMovement({ playerRef }: { playerRef: any }) {
         }
       }
     }
-    // Якщо немає геймпада — використовуємо клавіатуру
     if (!usedGamepad && (keyboard.x !== 0 || keyboard.y !== 0)) {
       x = keyboard.x;
-      y = -keyboard.y; // інвертуємо для відповідності стіку
+      y = -keyboard.y;
     }
     if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) return;
     const direction = new THREE.Vector3(x, 0, -y)
@@ -72,14 +71,8 @@ export default function PlayerMovement({ playerRef }: { playerRef: any }) {
     velocity.current.lerp(direction.multiplyScalar(0.08), 0.2);
     const body = playerRef.current;
     if (body) {
-      body.applyImpulse(
-        {
-          x: velocity.current.x,
-          y: 0,
-          z: velocity.current.z,
-        },
-        true,
-      );
+      const pos = body.translation();
+      camera.position.set(pos.x, pos.y + 1.4, pos.z); 
     }
   });
 

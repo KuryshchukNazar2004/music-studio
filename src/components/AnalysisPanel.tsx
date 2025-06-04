@@ -7,10 +7,12 @@ import { Interactive } from "@react-three/xr";
 
 export function AnalysisPanel3D({
   onClose,
-  position = [1.5, 1, -1.5],
+  position = [-1.5, 1.5, -2],
+  rotation = [0, 0.5, 0],
 }: {
   onClose: () => void;
   position?: [number, number, number];
+  rotation?: [number, number, number];
 }) {
   const colors = useColorStore((state) => state.colors);
 
@@ -33,7 +35,7 @@ export function AnalysisPanel3D({
   };
 
   return (
-    <group position={position}>
+    <group position={position} rotation={rotation}>
       <mesh>
         <boxGeometry args={[2, 2, 0.05]} />
         <meshStandardMaterial color="#111" transparent opacity={0.9} />
@@ -83,16 +85,6 @@ export function AnalysisPanel3D({
           </group>
         ))
       )}
-
-      {/* <Interactive onSelect={onClose}>
-        <mesh position={[0.8, 0.9, 0.07]}>
-          <boxGeometry args={[0.2, 0.2, 0.01]} />
-          <meshStandardMaterial color="red" />
-          <Text fontSize={0.12} color="white" position={[0, 0, 0.01]}>
-            ×
-          </Text>
-        </mesh>
-      </Interactive> */}
     </group>
   );
 }

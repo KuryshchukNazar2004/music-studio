@@ -118,8 +118,8 @@ export default function DrumSet({ position, rotation }: DrumSetProps) {
 
         {/* Хай-хет (Hi-Hat) */}
         <mesh
-          position={[-1.02, 1.5, 0.45]}
-          rotation={[-Math.PI / 2, 0, 0]}
+          position={[-0.94, 1.55, 0.45]}
+          rotation={[-Math.PI / 2.2, 0.3, 0]}
           onPointerDown={() => play("hihat.flac", "yellow")}
         >
           <circleGeometry args={[0.33, 40]} />
@@ -147,7 +147,7 @@ export default function DrumSet({ position, rotation }: DrumSetProps) {
 
         {/* Тарілки (Ride) */}
         <mesh
-          position={[1, 1.6, -0.5]}
+          position={[0.9, 1.6, -0.5]}
           rotation={[-Math.PI / 4, -0.4, 0]}
           onPointerDown={() => play("ride.wav", "orange")}
         >

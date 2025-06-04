@@ -7,3 +7,4 @@ export default function Studio() {
 
   return <primitive object={scene} scale={0.7} position={[0, -2, -4]} />;
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { XR, createXRStore } from "@react-three/xr";
 import { Environment } from "@react-three/drei";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { CapsuleCollider, Physics, RigidBody } from "@react-three/rapier";
 import DrumSet from "@/components/DrumSet";
 import Guitar from "@/components/Guitar";
@@ -12,6 +12,7 @@ import Studio from "@/components/Studio";
 import PlayerMovement from "@/components/PlayerMovement";
 import { MenuButton3D } from "@/components/MenuButton3D";
 import { AnalysisPanel3D } from "@/components/AnalysisPanel";
+import { PlayerBodyTracker } from "@/components/PlayerBodyTracker";
 
 type Vec3 = [number, number, number];
 
@@ -19,6 +20,7 @@ export default function VRPage() {
   const store = useMemo(() => createXRStore(), []);
   const [playerBody, setPlayerBody] = useState<any>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const rigidBodyRef = useRef<any>(null);
 
   const teleportTo = (pos: Vec3) => {
     if (!playerBody) {
@@ -30,6 +32,7 @@ export default function VRPage() {
     playerBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
     playerBody.setAngvel({ x: 0, y: 0, z: 0 }, true);
     playerBody.wakeUp();
+    console.log("🚀 Телепортуємось в:", pos);
   };
 
   return (
@@ -38,21 +41,18 @@ export default function VRPage() {
         <Suspense fallback={null}>
           <XR store={store}>
             <Physics>
-              <RigidBody
-                type="dynamic"
-                mass={1}
-                ref={(node: any) => {
-                  if (node && node.rigidBody) {
-                    setPlayerBody(node.rigidBody);
-                  }
-                }}
-              >
+              <RigidBody type="dynamic" mass={1} ref={rigidBodyRef}>
                 <CapsuleCollider args={[0.5, 1]} />
                 <mesh visible={false}>
                   <capsuleGeometry args={[0.5, 2]} />
                   <meshStandardMaterial transparent opacity={0.0} />
                 </mesh>
               </RigidBody>
+
+              <PlayerBodyTracker
+                rigidBodyRef={rigidBodyRef}
+                setPlayerBody={setPlayerBody}
+              />
 
               <Environment preset="studio" />
               <PlayerMovement playerRef={{ current: playerBody }} />
@@ -63,11 +63,13 @@ export default function VRPage() {
 
               <RigidBody type="fixed">
                 <DrumSet position={[0, -1.5, -2]} />
-                <MenuButton3D
-                  position={[0, 2, -2]}
-                  onTeleport={teleportTo}
-                  setShowAnalysis={setShowAnalysis}
-                />
+                {playerBody && (
+                  <MenuButton3D
+                    position={[0, 2, -2]}
+                    onTeleport={teleportTo}
+                    setShowAnalysis={setShowAnalysis}
+                  />
+                )}
               </RigidBody>
 
               <RigidBody type="fixed">

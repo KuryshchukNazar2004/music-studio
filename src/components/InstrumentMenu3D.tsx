@@ -23,7 +23,7 @@ export function InstrumentMenu3D({
     {
       label: "📊 Аналіз ударів",
       action: () => {
-        setShowAnalysis(true);
+        setShowAnalysis((prev) => !prev);
       },
     },
   ];
