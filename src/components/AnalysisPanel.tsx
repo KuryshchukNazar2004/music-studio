@@ -1,20 +1,17 @@
 "use client";
 
-import { Html } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import { useColorStore } from "@/hooks/HitColorStore";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
+import { Interactive } from "@react-three/xr";
 
-const colorMeanings: Record<string, string> = {
-  red: "Сильне бажання досягти успіху, енергійність, прагнення діяти.",
-  blue: "Потреба в спокої, гармонії, внутрішньому комфорті.",
-  yellow: "Надія на майбутнє, оптимізм, активна допитливість.",
-  green: "Стабільність, впевненість у собі, бажання самоствердитися.",
-  lime: "Потреба бути прийнятим, відкритість до змін.",
-  orange: "Прагнення до емоційного задоволення, контактність.",
-  purple: "Інтуїтивність, мрійливість, креативність.",
-};
-
-export default function AnalysisPanel() {
+export function AnalysisPanel3D({
+  onClose,
+  position = [1.5, 1, -1.5],
+}: {
+  onClose: () => void;
+  position?: [number, number, number];
+}) {
   const colors = useColorStore((state) => state.colors);
 
   const stats = useMemo(() => {
@@ -22,41 +19,80 @@ export default function AnalysisPanel() {
     colors.forEach((c) => {
       count[c] = (count[c] || 0) + 1;
     });
-    const sorted = Object.entries(count).sort((a, b) => b[1] - a[1]);
-    return sorted;
+    return Object.entries(count).sort((a, b) => b[1] - a[1]);
   }, [colors]);
 
+  const colorMeanings: Record<string, string> = {
+    red: "Сильне бажання досягти успіху",
+    blue: "Потреба в спокої",
+    yellow: "Надія, оптимізм",
+    green: "Стабільність, впевненість",
+    lime: "Потреба бути прийнятим",
+    orange: "Прагнення до емоцій",
+    purple: "Інтуїтивність, креативність",
+  };
+
   return (
-    <Html position={[0, 1.5, -2]} transform>
-      <div
-        style={{
-          padding: "20px",
-          background: "#111",
-          color: "#fff",
-          maxWidth: "300px",
-          borderRadius: "12px",
-        }}
+    <group position={position}>
+      <mesh>
+        <boxGeometry args={[2, 2, 0.05]} />
+        <meshStandardMaterial color="#111" transparent opacity={0.9} />
+      </mesh>
+
+      <Text
+        position={[0, 0.85, 0.06]}
+        fontSize={0.15}
+        color="white"
+        anchorX="center"
       >
-        <h2>Аналіз твоїх кольорових виборів</h2>
+        Аналіз виборів
+      </Text>
 
-        {stats.map(([color, count]) => (
-          <div
-            key={color}
-            style={{
-              margin: "10px 0",
-              padding: "10px",
-              background: color,
-              color: "#000",
-              borderRadius: "8px",
-            }}
-          >
-            <strong>{color.toUpperCase()}</strong> — вибрано {count} разів
-            <p>{colorMeanings[color]}</p>
-          </div>
-        ))}
+      {stats.length === 0 ? (
+        <Text
+          position={[0, 0.5, 0.06]}
+          fontSize={0.1}
+          color="white"
+          anchorX="center"
+        >
+          Поки що нема даних
+        </Text>
+      ) : (
+        stats.slice(0, 5).map(([color, count], i) => (
+          <group key={color} position={[0, 0.5 - i * 0.3, 0.06]}>
+            <mesh position={[-0.7, 0, 0]}>
+              <boxGeometry args={[0.3, 0.2, 0.01]} />
+              <meshStandardMaterial color={color} />
+            </mesh>
+            <Text
+              position={[0, 0.05, 0]}
+              fontSize={0.09}
+              color="white"
+              anchorX="center"
+            >
+              {color.toUpperCase()} — {count}
+            </Text>
+            <Text
+              position={[0, -0.05, 0]}
+              fontSize={0.06}
+              color="white"
+              anchorX="center"
+            >
+              {colorMeanings[color]}
+            </Text>
+          </group>
+        ))
+      )}
 
-        {stats.length === 0 && <p>Поки що нема кольорів для аналізу.</p>}
-      </div>
-    </Html>
+      {/* <Interactive onSelect={onClose}>
+        <mesh position={[0.8, 0.9, 0.07]}>
+          <boxGeometry args={[0.2, 0.2, 0.01]} />
+          <meshStandardMaterial color="red" />
+          <Text fontSize={0.12} color="white" position={[0, 0, 0.01]}>
+            ×
+          </Text>
+        </mesh>
+      </Interactive> */}
+    </group>
   );
 }
