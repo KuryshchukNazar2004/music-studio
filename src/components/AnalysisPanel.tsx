@@ -3,10 +3,8 @@
 import { Text } from "@react-three/drei";
 import { useColorStore } from "@/hooks/HitColorStore";
 import React, { useMemo } from "react";
-import { Interactive } from "@react-three/xr";
 
 export function AnalysisPanel3D({
-  onClose,
   position = [-1.5, 1.5, -2],
   rotation = [0, 0.5, 0],
 }: {

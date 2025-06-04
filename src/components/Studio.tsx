@@ -1,6 +1,5 @@
 "use client";
 import { useGLTF } from "@react-three/drei";
-import { useEffect } from "react";
 
 export default function Studio() {
   const { scene } = useGLTF("/models/studio.glb");

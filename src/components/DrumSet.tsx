@@ -1,85 +1,78 @@
 "use client";
 import { useColorStore } from "@/hooks/HitColorStore";
 import { useGLTF } from "@react-three/drei";
-import { useThree, useFrame } from "@react-three/fiber";
-import { useState, useRef } from "react";
-import { useXR } from "@react-three/xr";
-import * as THREE from "three";
+import { useState } from "react";
+// import * as THREE from "three";
 
 interface DrumSetProps {
   position: [number, number, number];
   rotation?: [number, number, number];
 }
 
-function DrumStick({
-  handedness,
-  onHit,
-}: {
-  handedness: "left" | "right";
-  onHit: (file: string, color: string) => void;
-}) {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame(() => {
-    if (!ref.current) return;
-    // Координати центру барабанів (можна зробити масив для кожного барабана)
-    const drums = [
-      {
-        pos: new THREE.Vector3(-0.59, 0.93, 0.12),
-        sound: "snare.wav",
-        color: "red",
-      },
-      {
-        pos: new THREE.Vector3(0, 0.5, -0.13),
-        sound: "kick.wav",
-        color: "blue",
-      },
-      {
-        pos: new THREE.Vector3(-1.02, 1.5, 0.45),
-        sound: "hihat.flac",
-        color: "yellow",
-      },
-      {
-        pos: new THREE.Vector3(-0.3, 1.42, -0.6),
-        sound: "tom1.wav",
-        color: "green",
-      },
-      {
-        pos: new THREE.Vector3(0.3, 1.42, -0.6),
-        sound: "tom2.wav",
-        color: "lime",
-      },
-      {
-        pos: new THREE.Vector3(1, 1.6, -0.5),
-        sound: "ride.wav",
-        color: "orange",
-      },
-      {
-        pos: new THREE.Vector3(0.77, 0.9, 0.05),
-        sound: "floor-tom.wav",
-        color: "purple",
-      },
-    ];
-    for (const drum of drums) {
-      if (ref.current.position.distanceTo(drum.pos) < 0.25) {
-        onHit(drum.sound, drum.color);
-      }
-    }
-  });
-  return (
-    <mesh ref={ref} position={[0, 0, 0]}>
-      <cylinderGeometry args={[0.03, 0.03, 0.5, 16]} />
-      <meshStandardMaterial color={handedness === "left" ? "brown" : "tan"} />
-    </mesh>
-  );
-}
+// function DrumStick({
+//   handedness,
+//   onHit,
+// }: {
+//   handedness: "left" | "right";
+//   onHit: (file: string, color: string) => void;
+// }) {
+//   const ref = useRef<THREE.Mesh>(null);
+//   useFrame(() => {
+//     if (!ref.current) return;
+//     const drums = [
+//       {
+//         pos: new THREE.Vector3(-0.59, 0.93, 0.12),
+//         sound: "snare.wav",
+//         color: "red",
+//       },
+//       {
+//         pos: new THREE.Vector3(0, 0.5, -0.13),
+//         sound: "kick.wav",
+//         color: "blue",
+//       },
+//       {
+//         pos: new THREE.Vector3(-1.02, 1.5, 0.45),
+//         sound: "hihat.flac",
+//         color: "yellow",
+//       },
+//       {
+//         pos: new THREE.Vector3(-0.3, 1.42, -0.6),
+//         sound: "tom1.wav",
+//         color: "green",
+//       },
+//       {
+//         pos: new THREE.Vector3(0.3, 1.42, -0.6),
+//         sound: "tom2.wav",
+//         color: "lime",
+//       },
+//       {
+//         pos: new THREE.Vector3(1, 1.6, -0.5),
+//         sound: "ride.wav",
+//         color: "orange",
+//       },
+//       {
+//         pos: new THREE.Vector3(0.77, 0.9, 0.05),
+//         sound: "floor-tom.wav",
+//         color: "purple",
+//       },
+//     ];
+//     for (const drum of drums) {
+//       if (ref.current.position.distanceTo(drum.pos) < 0.25) {
+//         onHit(drum.sound, drum.color);
+//       }
+//     }
+//   });
+//   return (
+//     <mesh ref={ref} position={[0, 0, 0]}>
+//       <cylinderGeometry args={[0.03, 0.03, 0.5, 16]} />
+//       <meshStandardMaterial color={handedness === "left" ? "brown" : "tan"} />
+//     </mesh>
+//   );
+// }
 
 export default function DrumSet({ position, rotation }: DrumSetProps) {
   const { scene } = useGLTF("/models/drums.glb");
-  const { camera } = useThree();
-  const [isSeated, setIsSeated] = useState(false);
   const addColor = useColorStore((state) => state.addColor);
-  const { session } = useXR();
-  const isPresenting = !!session;
   const [lastHit, setLastHit] = useState<string>("");
 
   const play = (file: string, color: string) => {
